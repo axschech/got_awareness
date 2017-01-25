@@ -1,0 +1,9 @@
+**/*._
+app/config/database.php
+**/vendor/*
+composer.lock
+composer.phar
+**.pyc
+run_server
+**.egg-info
+**/config/config.py
