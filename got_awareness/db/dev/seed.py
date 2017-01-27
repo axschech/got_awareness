@@ -4,23 +4,24 @@ import os
 
 class Seeder:
   script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
-  rel_path = 'names.txt'
-  abs_file_path = os.path.join(script_dir, rel_path)
   names = []
+  messages = []
   orgs = []
   raw = []
   code = '12345'
   
   def __init__(self):
     self.dropTables()
-    self.getNames()
-    
-  def getNames(self):
-    content = ''
-    with open(self.abs_file_path) as f:
-      content = f.readlines()
-      content = [x.strip() for x in content]
-    self.names = content
+    self.names = self.open('names.txt')
+    self.messages = self.open('messages.txt')
+  
+  def open(self, rel_path):
+      content = ''
+      abs_file_path = os.path.join(self.script_dir, rel_path)
+      with open(abs_file_path) as f:
+        content = f.readlines()
+        content = [x.strip() for x in content]
+      return content
   
   def dropTables(self):
     db.dropTables()
@@ -39,7 +40,6 @@ class Seeder:
       pass
         
   def createUser(self):
-
     name = random.choice(self.names)
     password = name.lower().replace(" ", '')
     email = password + "@coolguy.com"
@@ -54,7 +54,14 @@ class Seeder:
     except:
       pass
   
-#   def createMessage:
+  def createMessage(self):
+    with db.db_session:
+      try:
+        body = random.choice(self.messages)
+        user = db.User.select_random(1)
+        print user[0].organization.name.str()
+      except Exception, e:
+        print str(e)
     
 seeder = Seeder()
 orgs = []
@@ -67,11 +74,4 @@ print "\n Creating Users \n"
 for x in range(0, 20):
   seeder.createUser()
 
-for x in seeder.raw:
-  print "\n"
-  print x['name']
-  print x['email']
-  print x['password']
-  print "\n"
-
-
+seeder.createMessage()

@@ -5,6 +5,7 @@ import random
 
 sql_debug(True)
 
+
 db = Database();
 
 class User(db.Entity):
@@ -39,6 +40,12 @@ def hash(str):
     return bcrypt.hashpw(str.encode('utf-8'),bcrypt.gensalt())
   except Exception, e:
     return str(e)
-  
-db.bind('mysql', host=config.host, user=config.user, passwd=config.password, db=config.db)
+try:
+  db.bind('mysql', host=config.host, user=config.user, passwd=config.password, db=config.db)
+except:
+  with db_session:
+    db.bind('mysql', host=config.host, user=config.user, passwd=config.password)
+    db.execute("CREATE DATABASE if not exists got_awareness")
+    print "DATABASE CREATED RESTART SCRIPT"
+    exit()
 db.generate_mapping(create_tables=True)
